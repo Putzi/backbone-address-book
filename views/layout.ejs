@@ -44,7 +44,7 @@
                         <form class="navbar-search pull-left">
                             <input type="text" class="search-query" placeholder="Search">
                         </form>
-                        <button class="btn pull-right"><i class="icon-plus"></i></button>
+                        <a href="#/add" class="btn pull-right"><i class="icon-plus"></i></a>
                     </div>
                 </div>
             </ul>
@@ -72,6 +72,20 @@
     <% } %>
     <a href="#" class="btn">Back</a>
     <button class="btn btn-danger">Remove</button>
+</script>
+
+<script type="text/template" id="person-add-template">
+    <form action="">
+        <label>First Name: <input type="text" name="firstName"/></label>
+        <label>Last Name: <input type="text" name="lastName"/></label>
+        <label>Email: <input type="email" name="email"/></label>
+        <label>Phone number: <input type="tel" name="phone"/></label>
+
+        <div class="form-actions">
+            <a href="#" class="btn">Cancel</a>
+            <button class="btn btn-primary">Save</button>
+        </div>
+    </form>
 </script>
 
 <script type="text/javascript" src="/javascripts/application.js"></script>

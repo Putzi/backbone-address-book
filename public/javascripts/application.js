@@ -57,6 +57,36 @@ var PersonCardView = Backbone.View.extend({
     }
 });
 
+var AddPersonView = Backbone.View.extend({
+    template: _.template($('#person-add-template').html()),
+
+    events: {
+        'click button': 'addPerson'
+    },
+
+    render: function() {
+        this.$el.html(this.template());
+        return this;
+    },
+
+    addPerson: function(event) {
+        event.preventDefault();
+        var p = new Person();
+        p.save({
+            firstName: this.$el.find('[name=firstName]').val(),
+            lastName: this.$el.find('[name=lastName]').val(),
+            email: this.$el.find('[name=email]').val(),
+            phone: this.$el.find('[name=phone]').val()
+        }, {
+            success: function() {
+                personList.add(p);
+                router.navigate('#/show/' + p.id, true);
+            }
+        });
+
+    }
+});
+
 var PersonList = Backbone.Collection.extend({
     url: '/person',
     model: Person
@@ -93,7 +123,8 @@ var personList = new PersonList();
 var Router = Backbone.Router.extend({
     routes: {
         '': 'index',
-        'show/:id': 'show'
+        'show/:id': 'show',
+        'add': 'add'
     },
 
     index: function() {
@@ -109,6 +140,12 @@ var Router = Backbone.Router.extend({
         } else {
             router.navigate('', true);
         }
+    },
+
+    add: function() {
+        var v = new AddPersonView();
+        $('#card-view').html('');
+        $('#card-view').append(v.render().el);
     }
 });
 
