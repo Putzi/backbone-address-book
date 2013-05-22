@@ -117,7 +117,43 @@ var PersonListView = Parse.View.extend({
     }
 });
 
+var ToolbarView = Parse.View.extend({
+    className: 'navbar',
+
+    events: {
+        'keyup input[name=search]': 'search'
+    },
+
+    template: _.template($('#toolbar-template').html()),
+
+    render: function() {
+        this.$el.html(this.template());
+        return this;
+    },
+
+    search: function(event) {
+        var that = this;
+        if(!this.timeout) {
+            this.timeout = setTimeout(function() {
+                var value = $(event.target).val();
+                var q1 = new Parse.Query(Person);
+                q1.contains('firstName', value);
+                var q2 = new Parse.Query(Person);
+                q2.contains('lastName', value);
+                personList.query = Parse.Query.or(q1, q2);
+                personList.fetch();
+                that.timeout = null;
+            }, 500);
+        }
+    }
+});
+
+
+var defaultQuery = new Parse.Query(Person);
+defaultQuery.ascending('lastName');
+
 var personList = new PersonList();
+personList.query = defaultQuery;
 
 var Router = Parse.Router.extend({
     routes: {
@@ -149,9 +185,10 @@ var Router = Parse.Router.extend({
 });
 
 var personListView = new PersonListView({collection: personList});
-
+var toolbarView = new ToolbarView();
 $('#list-view').html('');
 $('#list-view').append(personListView.render().$el);
+$('#toolbar').append(toolbarView.render().el);
 var router = new Router();
 personList.fetch({
     success: function() {
