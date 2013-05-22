@@ -1,7 +1,7 @@
-var Person = Backbone.Model.extend({
-    urlRoot: '/person',
+Parse.initialize("jYSgqLNNUdEIsTR5V1VFKqwnK2CZYxbjH7f1acy5", "hopbwRHXlpV9uQPHEZ6QSBZRb84r3k56qVW0lnLE");
 
-    idAttribute: '_id',
+var Person = Parse.Object.extend({
+    className: 'Person',
 
     defaults: {
         firstName: 'No name',
@@ -10,7 +10,7 @@ var Person = Backbone.Model.extend({
     }
 });
 
-var PersonView = Backbone.View.extend({
+var PersonView = Parse.View.extend({
     tagName: 'li',
 
     template: _.template($('#person-template').html()),
@@ -25,8 +25,8 @@ var PersonView = Backbone.View.extend({
     },
 
     initialize: function() {
-        this.listenTo(this.model, 'change', this.render);
-        this.listenTo(this.model, 'destroy', this.remove);
+        this.model.on('change', this.render, this);
+        this.model.on('destroy', this.remove, this);
     },
 
     select: function() {
@@ -35,7 +35,7 @@ var PersonView = Backbone.View.extend({
     }
 });
 
-var PersonCardView = Backbone.View.extend({
+var PersonCardView = Parse.View.extend({
     template: _.template($('#person-card-template').html()),
     className: 'well span4',
     events: {
@@ -43,8 +43,8 @@ var PersonCardView = Backbone.View.extend({
     },
 
     initialize: function() {
-        this.listenTo(this.model, 'change', this.render);
-        this.listenTo(this.model, 'destroy', this.remove);
+        this.model.on('change', this.render, this);
+        this.model.on('destroy', this.remove, this);
     },
 
     render: function() {
@@ -57,7 +57,7 @@ var PersonCardView = Backbone.View.extend({
     }
 });
 
-var AddPersonView = Backbone.View.extend({
+var AddPersonView = Parse.View.extend({
     template: _.template($('#person-add-template').html()),
 
     events: {
@@ -80,26 +80,25 @@ var AddPersonView = Backbone.View.extend({
         }, {
             success: function() {
                 personList.add(p);
-                router.navigate('#/show/' + p.id, true);
+                router.navigate('#/show/' + p.objectId, true);
             }
         });
 
     }
 });
 
-var PersonList = Backbone.Collection.extend({
-    url: '/person',
+var PersonList = Parse.Collection.extend({
     model: Person
 });
 
-var PersonListView = Backbone.View.extend({
+var PersonListView = Parse.View.extend({
     tagName: 'ul',
 
     className: 'nav nav-tabs nav-stacked',
 
     initialize: function() {
-        this.listenTo(this.collection, 'add', this.addOne, this);
-        this.listenTo(this.collection, 'reset', this.addAll, this);
+        this.collection.on('add', this.addOne, this);
+        this.collection.on('reset', this.addAll, this);
     },
 
     render: function(){
@@ -120,7 +119,7 @@ var PersonListView = Backbone.View.extend({
 
 var personList = new PersonList();
 
-var Router = Backbone.Router.extend({
+var Router = Parse.Router.extend({
     routes: {
         '': 'index',
         'show/:id': 'show',
@@ -156,7 +155,7 @@ $('#list-view').append(personListView.render().$el);
 var router = new Router();
 personList.fetch({
     success: function() {
-        Backbone.history.start();
+        Parse.history.start();
     }
 });
 
